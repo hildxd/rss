@@ -41,7 +41,7 @@ default: google
 # set extends website
 extend:
   - name: bilibili
-    rule: https://search.bilibili.com/all?keyword={}
+    rule: https://search.bilibili.com/all?keyword={keyword}
 ```
 
 ## Default Support Website
