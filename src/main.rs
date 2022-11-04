@@ -2,10 +2,13 @@ use anyhow::{Context, Ok, Result};
 use opt::SubCommand::Content;
 use structopt::StructOpt;
 use webbrowser;
+
 mod opt;
 mod config;
 
-fn main() -> Result<()> {
+#[tokio::main]
+async fn main() -> Result<()> {
+    config::read_config().await?;
     let opt = opt::Opt::from_args();
     let config = config::init_config();
     match opt.cmd {
