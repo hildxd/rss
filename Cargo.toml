@@ -1,5 +1,5 @@
 [package]
-name = "ss"
+name = "r-ss"
 version = "0.1.0"
 edition = "2021"
 authors = ["sunlee", "zx"]
@@ -7,6 +7,8 @@ license = "MIT"
 description = "a tool to quickly open your search website"
 readme = "README.md"
 keywords = ["cli", "search", "website"]
+homepage = "https://github.com/hildxd/rss"
+repository = "https://github.com/hildxd/rss"
 categories = ["command-line-utilities"]
 # See more keys and their definitions at https://doc.rust-lang.org/cargo/reference/manifest.html
 
