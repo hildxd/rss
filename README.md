@@ -30,7 +30,7 @@ in development
 
 ## Default Support Website
 
-```json
+```js
 [
   {
     name: 'baidu',
@@ -54,7 +54,3 @@ in development
   },
 ]
 ```
-
-## License
-
-MIT, hildxd
