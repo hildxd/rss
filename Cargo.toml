@@ -18,5 +18,5 @@ webbrowser = "0.8.1"
 anyhow = "1.0.40"
 tokio = { version = "1", features = ["full"] }
 dirs = "4.0.0"
-serde = "1.0"
-serde_yaml = "0.9"
+yaml-rust = "0.4.5"
+linked-hash-map = "0.5.6"

@@ -1,24 +1,25 @@
 use anyhow::{Context, Ok, Result};
 use dirs;
 // use serde_yaml;
-use std::collections::HashMap;
+use linked_hash_map::LinkedHashMap;
 use tokio::{fs::File, io::AsyncReadExt};
+use yaml_rust::{Yaml, YamlLoader};
 
-pub fn init_config<'a>() -> HashMap<&'a str, &'a str> {
-    let mut map = HashMap::new();
-    map.insert("baidu", "https://www.baidu.com/s?wd={keyword}");
-    map.insert("google", "https://www.google.com/search?q={keyword}");
+pub fn init_config() -> LinkedHashMap<String, String> {
+    let mut map = LinkedHashMap::new();
+    map.insert("baidu".to_string(),"https://www.baidu.com/s?wd={keyword}".to_string());
+    map.insert("google".to_string(), "https://www.google.com/search?q={keyword}".to_string());
     map.insert(
-        "mdn",
-        "https://developer.mozilla.org/zh-CN/search?q={keyword}",
+        "mdn".to_string(),
+        "https://developer.mozilla.org/zh-CN/search?q={keyword}".to_string(),
     );
-    map.insert("npm", "https://www.npmjs.com/search?q={keyword");
-    map.insert("git", "https://github.com/search?q={keyword}");
+    map.insert("npm".to_string(), "https://www.npmjs.com/search?q={keyword}".to_string());
+    map.insert("git".to_string(), "https://github.com/search?q={keyword}".to_string());
+    map.insert("default".to_string(), "https://www.google.com/search?q={keyword}".to_string());
     map
 }
 
-// #[tokio::main]
-pub async fn read_config() -> Result<()> {
+pub async fn read_config() -> Result<LinkedHashMap<String, String>> {
     let path = dirs::home_dir().unwrap();
     let path = path.join(".ss.yaml");
     let f = File::open(path)
@@ -26,15 +27,35 @@ pub async fn read_config() -> Result<()> {
         .with_context(|| "open config file error");
     if let Result::Ok(mut file) = f {
         let mut content = String::new();
-        file.read_to_string(&mut content).await.with_context(|| "read config file error")?;
-        // let map: serde_yaml::Value = serde_yaml::from_str(&content)?;
-        // println!(
-        //     "Read YAML String:{}",
-        //     map["default"]
-        //         .as_str()
-        //         .map(|s| s.to_string())
-        //         .ok_or(anyhow!("parse config file error"))?
-        // );
+        file.read_to_string(&mut content)
+            .await
+            .with_context(|| "read config file error")?;
+        let doc = YamlLoader::load_from_str(&content).with_context(|| "parse config file error")?;
+        return read_to_yaml(&doc[0]);
+    } else {
+        Err(f.unwrap_err())
     }
-    Ok(())
+}
+
+fn read_to_yaml(doc: &Yaml) -> Result<LinkedHashMap<String, String>> {
+    let mut map = LinkedHashMap::new();
+    let default = doc["default"]
+        .as_str()
+        .with_context(|| "default is not string")?;
+    let extends = doc["extend"]
+        .as_vec()
+        .with_context(|| "extend is not array")?;
+    map.insert("default".into(), default.into());
+    extends.iter().for_each(|x| {
+        let key = x["name"]
+            .as_str()
+            .with_context(|| "key is not string")
+            .unwrap();
+        let value = x["rule"]
+            .as_str()
+            .with_context(|| "value is not string")
+            .unwrap();
+        map.insert(key.into(), value.into());
+    });
+    Ok(map)
 }

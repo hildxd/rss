@@ -1,4 +1,4 @@
-# SS
+# RSS
 
 a rust version ss
 > [ss](https://github.com/alexzhang1030/ss) ss means "Search, Search"
@@ -32,7 +32,17 @@ r-ss -u git alexzhang1030 # <- will open github.com with query "alexzhang1030"
 
 ## Config
 
-in development
+config file in `~/.ss.yaml`  
+example:
+
+```yaml
+# set default website [google, baidu]
+default: google
+# set extends website
+extend:
+  - name: bilibili
+    rule: https://search.bilibili.com/all?keyword={}
+```
 
 ## Default Support Website
 
